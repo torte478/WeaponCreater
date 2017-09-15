@@ -10,68 +10,64 @@ namespace WeaponCeater
     {
         static void Main(string[] args)
         {
-            // all comments after the blocks of code
-
-            string alfa = Directory.GetCurrentDirectory().Substring(0, Directory.GetCurrentDirectory().Length - 9 - 13);
-            string SBway = alfa + "swordblade.txt";
-            string SHway = alfa + "swordhandle.txt";
-            string LGway = alfa + "lgsw.txt";
-            string Picway = alfa + @"images\";
             // .txt files way
+            var basePath = Directory.GetCurrentDirectory().Substring(0, Directory.GetCurrentDirectory().Length - 9 - 13);
+            var swordBladesPath = Path.Combine(basePath, "swordblade.txt");
+            var swordHandlesPath = Path.Combine(basePath, "swordhandle.txt");
+            var legendarySwordsPath = Path.Combine(basePath, "lgsw.txt");
+            var picturesPath = Path.Combine(basePath, "images");
 
-            List<SwordBlade> Sblade = new List<SwordBlade>();
-            List<SwordHandle> Shandle = new List<SwordHandle>();
-            List<LegendarySword> legendarySword = new List<LegendarySword>();
-            List<Bag> myBag = new List<Bag>();
-            Sword mySword = new Sword();
-            SwordBlade.ReadData(SBway, Sblade, Picway);
-            SwordHandle.ReadData(SHway, Shandle, Picway);
-            LegendarySword.ReadData(LGway, legendarySword, Picway);
-            Random e = new Random();
-            int pocket = 0;
             // lists and variables initialization
+            var swordBlades = new List<SwordBlade>();
+            var swordHandles = new List<SwordHandle>();
+            var legendarySwords = new List<LegendarySword>();
+            var myBags = new List<Bag>();
+            var mySword = new Sword();
+            SwordBlade.ReadData(swordBladesPath, swordBlades, picturesPath);
+            SwordHandle.ReadData(swordHandlesPath, swordHandles, picturesPath);
+            LegendarySword.ReadData(legendarySwordsPath, legendarySwords, picturesPath);
 
-            HowIGetWeapon.FindChest(mySword, legendarySword, Sblade, Shandle, myBag, alfa);
-            HowIGetWeapon.KillEnemy(mySword, legendarySword, Sblade, Shandle, myBag, alfa);
-            HowIGetWeapon.FindChest(mySword, legendarySword, Sblade, Shandle, myBag, alfa);
-            HowIGetWeapon.KillEnemy(mySword, legendarySword, Sblade, Shandle, myBag, alfa);
-            HowIGetWeapon.FindChest(mySword, legendarySword, Sblade, Shandle, myBag, alfa);
-            HowIGetWeapon.KillEnemy(mySword, legendarySword, Sblade, Shandle, myBag, alfa);
-            HowIGetWeapon.FindChest(mySword, legendarySword, Sblade, Shandle, myBag, alfa);
-            HowIGetWeapon.KillEnemy(mySword, legendarySword, Sblade, Shandle, myBag, alfa);
             // get 8 swords 
+            HowIGetWeapon.FindChest(mySword, legendarySwords, swordBlades, swordHandles, myBags, basePath);
+            HowIGetWeapon.KillEnemy(mySword, legendarySwords, swordBlades, swordHandles, myBags, basePath);
+            HowIGetWeapon.FindChest(mySword, legendarySwords, swordBlades, swordHandles, myBags, basePath);
+            HowIGetWeapon.KillEnemy(mySword, legendarySwords, swordBlades, swordHandles, myBags, basePath);
+            HowIGetWeapon.FindChest(mySword, legendarySwords, swordBlades, swordHandles, myBags, basePath);
+            HowIGetWeapon.KillEnemy(mySword, legendarySwords, swordBlades, swordHandles, myBags, basePath);
+            HowIGetWeapon.FindChest(mySword, legendarySwords, swordBlades, swordHandles, myBags, basePath);
+            HowIGetWeapon.KillEnemy(mySword, legendarySwords, swordBlades, swordHandles, myBags, basePath);
 
+            // output of the final bag
             Console.WriteLine();
             Console.WriteLine("Your swords:");
-            for (int i = 0; i < myBag.Count; i++)
+            for (var i = 0; i < myBags.Count; i++)
             {
-                Console.WriteLine(myBag.ElementAt(i).Name);
+                Console.WriteLine(myBags[i].Name);
             }
-            // output of the final bag
 
-            int f = myBag.Count;
-            for (int i = 0; i < f; f--)
+            // calculate the total cost of the swords (.SellSword method)
+            var totalCost = 0;
+            for (var i = 0; i < myBags.Count; i++)
             {
-                pocket += Bag.SellSword(myBag, i);
+                totalCost += Bag.SellSword(myBags, i);
             }
             Console.WriteLine();
-            Console.WriteLine("If you sell all swords you will earn {0} coins.", pocket);
-            // calculate the total cost of the swords (.SellSword method)
+            Console.WriteLine("If you sell all swords you will earn {0} coins.", totalCost);
 
+            // clear CreatedSword directory
             Console.WriteLine("Do you want to delet new pictures?(Y/N)");
             if (Console.ReadLine() == "Y")
             {
-                DirectoryInfo dirInfo = new DirectoryInfo(alfa+@"CreatedSword");
-                foreach (FileInfo file in dirInfo.GetFiles())
+                var dirInfo = new DirectoryInfo(basePath+@"CreatedSword");
+                foreach (var file in dirInfo.GetFiles())
                 {
                     file.Delete();
                 }
             }
             else
             {
-                Console.WriteLine("Check the directory " +alfa+ @"CreatedSword");
+                Console.WriteLine("Check the directory " +basePath+ @"CreatedSword");
             }
-            // clear CreatedSword directory
 
             Console.Read();
         }
@@ -132,7 +128,9 @@ namespace WeaponCeater
                 a.Creator = wordlist[5];
                 a.Level = Convert.ToInt32(wordlist[6]);
                 a.Imageway = wordlist[7];
-                a.bladepic = new Bitmap(Picway+a.Imageway+".bmp");
+                var fileName = string.Format("{0}.bmp", a.Imageway);
+                var filePath = Path.Combine(Picway, fileName);
+                a.bladepic = new Bitmap(filePath);
 
                 Sblade.Add(a);
 
@@ -186,7 +184,9 @@ namespace WeaponCeater
                 a.Creator = wordlist[5];
                 a.Level = Convert.ToInt32(wordlist[6]);
                 a.Imageway = wordlist[7];
-                a.handlepic = new Bitmap(Picway + a.Imageway + ".bmp");
+                var fileName = string.Format("{0}.bmp", a.Imageway);
+                var filePath = Path.Combine(Picway, fileName);
+                a.handlepic = new Bitmap(filePath);
 
                 Shandle.Add(a);
 
@@ -433,7 +433,10 @@ namespace WeaponCeater
                 a.Creator = wordlist[5];
                 a.Level = Convert.ToInt32(wordlist[6]);
                 a.Imageway = wordlist[7];
-                a.Swordpic = new Bitmap(Picway + a.Imageway + ".bmp");
+
+                var fileName = string.Format("{0}.bmp", a.Imageway);
+                var filePath = Path.Combine(Picway, fileName);
+                a.Swordpic = new Bitmap(filePath);
 
                 legendarySword.Add(a);
 
