@@ -79,7 +79,7 @@ namespace WeaponCeater
 
         private void ExcangedWeapon(ISword weapon)
         {
-            var removedWeaponIndex = gui.AskInventoryBagIndex();
+            var removedWeaponIndex = gui.AskInventoryBagIndex(1, inventory.Count());
             inventory.RemoveAt(removedWeaponIndex);
             inventory.Add(weapon);
         }
@@ -104,7 +104,8 @@ namespace WeaponCeater
             }
             else
             {
-                gui.ShowCheckDirectoryMessage();
+                var directory = pathManager.CreatedSwordsDirectory;
+                gui.ShowCheckDirectoryMessage(directory);
             }
         }
 
