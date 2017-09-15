@@ -1,23 +1,24 @@
 ﻿using System.IO;
+using System.Linq;
 
 namespace WeaponCeater
 {
     public class Game
     {
-        private const int ChestLegendarySwordChance = 5;
-        private const int EnemyLegendarySwordChance = 10;
+        private const int ChestLegendaryWeaponChance = 5;
+        private const int EnemyLegendaryWeaponChance = 10;
 
-        private readonly WeaponGenerator weaponGenerator;
+        private readonly IWeaponGenerator weaponGenerator;
         private readonly UserInterface gui;
-        private readonly PathManager pathManager;
+        private readonly string createdSwordsDirectory;
 
         private readonly Inventory inventory;
 
-        public Game(WeaponGenerator weaponGenerator, UserInterface gui, PathManager pathManager)
+        public Game(IWeaponGenerator weaponGenerator, UserInterface gui, string createdSwordsDirectory)
         {
             this.weaponGenerator = weaponGenerator;
             this.gui = gui;
-            this.pathManager = pathManager;
+            this.createdSwordsDirectory = createdSwordsDirectory;
 
             inventory = new Inventory();
         }
@@ -43,17 +44,17 @@ namespace WeaponCeater
 
         private void FindChest()
         {
-            FindWeapon(ChestLegendarySwordChance);
+            FindWeapon(ChestLegendaryWeaponChance);
         }
 
-        private void FindWeapon(int legendarySwordChance)
+        private void FindWeapon(int legendaryWeaponChance)
         {
-            var weapon = weaponGenerator.Generate(legendarySwordChance);
+            var weapon = weaponGenerator.Generate(legendaryWeaponChance);
             gui.ShowWeapon(weapon);
             TryPutWeaponToInventory(weapon);
         }
 
-        private void TryPutWeaponToInventory(ISword weapon)
+        private void TryPutWeaponToInventory(IWeapon weapon)
         {
             if (inventory.IsFull())
             {
@@ -67,7 +68,7 @@ namespace WeaponCeater
             }
         }
 
-        private bool TryExchangeWeapon(ISword weapon)
+        private bool TryExchangeWeapon(IWeapon weapon)
         {
             var needExchange = gui.AskSwordReplace();
             if (needExchange)
@@ -77,7 +78,7 @@ namespace WeaponCeater
             return needExchange;
         }
 
-        private void ExcangedWeapon(ISword weapon)
+        private void ExcangedWeapon(IWeapon weapon)
         {
             var removedWeaponIndex = gui.AskInventoryBagIndex(1, inventory.Count());
             inventory.RemoveAt(removedWeaponIndex);
@@ -86,7 +87,7 @@ namespace WeaponCeater
 
         private void KillEnemy()
         {
-            FindWeapon(EnemyLegendarySwordChance);
+            FindWeapon(EnemyLegendaryWeaponChance);
         }
 
         private void ShowTotalWeaponCost()
@@ -97,23 +98,20 @@ namespace WeaponCeater
 
         private void CheckPicturesDeleting()
         {
-            var needDeletePictures = gui.AskPicturedDeleting();
+            var needDeletePictures = gui.AskPictureDeleting();
             if (needDeletePictures)
             {
                 ClearCreatedSwordsDirectory();
             }
             else
             {
-                var directory = pathManager.CreatedSwordsDirectory;
-                gui.ShowCheckDirectoryMessage(directory);
+                gui.ShowCheckDirectoryMessage(createdSwordsDirectory);
             }
         }
 
         private void ClearCreatedSwordsDirectory()
         {
-            var directory = pathManager.CreatedSwordsDirectory;
-
-            var files = new DirectoryInfo(directory).GetFiles();
+            var files = new DirectoryInfo(createdSwordsDirectory).GetFiles();
             foreach (var file in files)
             {
                 file.Delete();

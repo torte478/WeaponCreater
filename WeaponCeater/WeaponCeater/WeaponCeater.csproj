@@ -42,16 +42,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseWeaponGenerator.cs" />
+    <Compile Include="CreatorBonus.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="Interfaces.cs" />
     <Compile Include="Inventory.cs" />
-    <Compile Include="ISword.cs" />
-    <Compile Include="IWeaponPart.cs" />
+    <Compile Include="IWeaponGenerator.cs" />
     <Compile Include="PathManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserInterface.cs" />
     <Compile Include="Weapon.cs" />
-    <Compile Include="WeaponGenerator.cs" />
+    <Compile Include="SwordGenerator.cs" />
+    <Compile Include="SwordLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

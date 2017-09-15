@@ -6,11 +6,11 @@ using System.Linq;
 
 namespace WeaponCeater
 {
-    public class WeaponLoader
+    public class SwordLoader
     {
         private readonly PathManager pathManager;
 
-        public WeaponLoader(PathManager pathManager)
+        public SwordLoader(PathManager pathManager)
         {
             this.pathManager = pathManager;
         }

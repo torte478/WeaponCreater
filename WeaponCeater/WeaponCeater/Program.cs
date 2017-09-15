@@ -9,13 +9,13 @@ namespace WeaponCeater
     {
         static void Main()
         {
-            var swordLoader = new WeaponLoader();
             var pathManager = new PathManager();
-            var weaponGenerator = new WeaponGenerator(swordLoader, pathManager);
+            var swordLoader = new SwordLoader(pathManager);
+            var weaponGenerator = new SwordGenerator(swordLoader, pathManager);
             var gui = new UserInterface();
-            var game = new Game(weaponGenerator, gui, pathManager);
+            var game = new Game(weaponGenerator, gui, pathManager.CreatedSwordsDirectory);
             game.Play();
-//            return;
+            return;
             // .txt files dataPath
             var basePath = Directory.GetCurrentDirectory().Substring(0, Directory.GetCurrentDirectory().Length - 9 - 13);
             var swordBladesPath = Path.Combine(basePath, "swordblade.txt");
@@ -26,9 +26,9 @@ namespace WeaponCeater
             // lists and variables initialization
             var myBags = new List<Bag>();
             var mySword = new Sword();
-            var swordBlades = BaseWeapon.ReadData(() => new SwordBlade(), swordBladesPath, picturesPath);
-            var swordHandles = BaseWeapon.ReadData(() => new SwordHandle(), swordHandlesPath, picturesPath);
-            var legendarySwords = BaseWeapon.ReadData(() => new LegendarySword(), legendarySwordsPath, picturesPath);
+            var swordBlades = BaseSword.ReadData(() => new SwordBlade(), swordBladesPath, picturesPath);
+            var swordHandles = BaseSword.ReadData(() => new SwordHandle(), swordHandlesPath, picturesPath);
+            var legendarySwords = BaseSword.ReadData(() => new LegendarySword(), legendarySwordsPath, picturesPath);
 
             // get 8 swords 
             HowIGetWeapon.FindChest(mySword, legendarySwords, swordBlades, swordHandles, myBags, basePath);
@@ -77,7 +77,7 @@ namespace WeaponCeater
     }
 
     // basic class, creates all the characteristics of a sword
-    public abstract class BaseWeapon : ISword
+    public abstract class BaseSword : ISword
     {
         public WeaponStatistics Stats { get; set; }
         public Bitmap Picture { get; set; }
@@ -92,7 +92,7 @@ namespace WeaponCeater
         public int Level { get; set; }
 
         public static List<T> ReadData<T>(Func<T> constructWeapon, string dataPath, string picturesPath)
-            where T : BaseWeapon
+            where T : BaseSword
         {
             var swordBlades = new List<T>();
 
@@ -125,7 +125,7 @@ namespace WeaponCeater
             return swordBlades;
         }
 
-        public static void AddToBag(BaseWeapon mySword, List<Bag> myBag)
+        public static void AddToBag(BaseSword mySword, List<Bag> myBag)
         {
             if (myBag.Count < 6)
             {
@@ -177,12 +177,12 @@ namespace WeaponCeater
         }
     }
 
-    public class SwordBlade : BaseWeapon, IWeaponPart
+    public class SwordBlade : BaseSword, IWeaponPart
     {
         public WeaponStatistics Stats { get; set; }
     }
 
-    public class SwordHandle : BaseWeapon, IWeaponPart
+    public class SwordHandle : BaseSword, IWeaponPart
     {
         public WeaponStatistics Stats { get; set; }
     }
@@ -204,7 +204,7 @@ namespace WeaponCeater
         }
     }
 
-    class Sword : BaseWeapon, ISword
+    class Sword : BaseSword, ISword
     {
         private class CreatorBonus
         {
@@ -295,16 +295,16 @@ namespace WeaponCeater
         }
     }
 
-    public class LegendarySword : BaseWeapon, ISword
+    public class LegendarySword :BaseSword, ISword
     {
 
     }
 
-    public class Bag : BaseWeapon
+    public class Bag : BaseSword
     {
         public Bitmap Swordpic { get; set; }
 
-        public Bag(BaseWeapon mySword)
+        public Bag(BaseSword mySword)
         {
             Creator = mySword.Creator;
             CriticalHitChance = mySword.CriticalHitChance;
@@ -345,7 +345,7 @@ namespace WeaponCeater
 
                 Sword.MakeSword(Sblade, Shandle, mySword, alfa);
                 Console.WriteLine(mySword.ToString());
-                BaseWeapon.AddToBag(mySword, myBag);
+                BaseSword.AddToBag(mySword, myBag);
             }
             else
             {
@@ -356,7 +356,7 @@ namespace WeaponCeater
                 var fileName = string.Format("{0}.bmp", sword.Name);
                 var filePath = Path.Combine(alfa, "CreatedSword", fileName);
                 sword.Picture.Save(filePath + ".bmp");
-                BaseWeapon.AddToBag(sword, myBag);
+                BaseSword.AddToBag(sword, myBag);
             }
         }
     }

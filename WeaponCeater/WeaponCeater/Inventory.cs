@@ -1,17 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace WeaponCeater
 {
-    public class Inventory
+    public class Inventory : IEnumerable<IWeapon>
     {
         private const int MaxWeaponCount = 6;
 
-        private readonly List<ISword> weapons;
+        private readonly List<IWeapon> weapons;
 
         public Inventory()
         {
-            weapons = new List<ISword>();
+            weapons = new List<IWeapon>();
         }
 
         public bool IsFull()
@@ -19,7 +20,7 @@ namespace WeaponCeater
             return weapons.Count() >= MaxWeaponCount;
         }
 
-        public void Add(ISword weapon)
+        public void Add(IWeapon weapon)
         {
             weapons.Add(weapon);
         }
@@ -34,14 +35,14 @@ namespace WeaponCeater
             return weapons.Sum(weapon => weapon.Stats.Value);
         }
 
-        public IEnumerable<ISword> GetWeapons()
+        public IEnumerator<IWeapon> GetEnumerator()
         {
-            return weapons.ToList();
+            return weapons.GetEnumerator();
         }
 
-        public int Count()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return weapons.Count();
+            return GetEnumerator();
         }
     }
 }

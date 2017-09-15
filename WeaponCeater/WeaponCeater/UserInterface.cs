@@ -8,7 +8,7 @@ namespace WeaponCeater
         {
             Console.WriteLine();
             Console.WriteLine("Your swords:");
-            foreach (var weapon in inventory.GetWeapons())
+            foreach (var weapon in inventory)
             {
                 Console.WriteLine(weapon.Stats.Name);
             }
@@ -60,7 +60,7 @@ namespace WeaponCeater
             Console.WriteLine(message);
         }
 
-        public bool AskPicturedDeleting()
+        public bool AskPictureDeleting()
         {
             var question = "Do you want delete new pictures?(Y/N)";
             return AskYesNoQuestion(question);
@@ -78,7 +78,7 @@ namespace WeaponCeater
             Console.WriteLine(message);
         }
 
-        public void ShowWeapon(ISword weapon)
+        public void ShowWeapon(IWeapon weapon)
         {
             Console.WriteLine(weapon.ToString());
         }
