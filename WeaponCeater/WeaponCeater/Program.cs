@@ -117,6 +117,43 @@ namespace WeaponCeater
 
             return swordBlades;
         }
+
+        public static void AddToBag(BaseWeapon mySword, List<Bag> myBag)
+        {
+            if (myBag.Count < 6)
+            {
+                var bag = new Bag(mySword);
+                myBag.Add(bag);
+            }
+            else
+            {
+                Console.WriteLine("Your bag is full! Do you want to exchange mySword?(Y / N)");
+                if (Console.ReadLine() == "Y")
+                {
+                    Console.WriteLine("Enter a number of the mySword that you want to discard.(1..{0})", myBag.Count);
+                    var op = Console.ReadLine();
+                    var swordIndex = Convert.ToInt32(op);
+                    while ((swordIndex > myBag.Count) || (swordIndex == 0))
+                    {
+                        Console.WriteLine("Enter number in (1..{0})", myBag.Count);
+                        op = Console.ReadLine();
+                        swordIndex = Convert.ToInt32(op);
+                    }
+                    myBag.RemoveAt(swordIndex - 1);
+
+                    var bag = new Bag(mySword);
+                    myBag.Add(bag);
+
+                    Console.WriteLine("Your bag now:");
+                    Console.WriteLine("-----------------");
+                    foreach (var p in myBag)
+                    {
+                        Console.WriteLine(p.Name);
+                    }
+                    Console.WriteLine("-----------------");
+                }
+            }
+        }
     }
 
     class SwordBlade : BaseWeapon
@@ -216,132 +253,35 @@ namespace WeaponCeater
                 bonus.Apply(mySword);
             }
         }
-
-        public static void AddToBag(Sword mySword, List<Bag> myBag)
-        {
-            if (myBag.Count < 6) // 6 is bag capacity (if you want to change it, change '6' and in .AddToBag method in LegendarySword class)
-            {
-                Bag bag = new Bag
-                {
-                    Creator = mySword.Creator,
-                    CriticalHitChance = mySword.CriticalHitChance,
-                    Damage = mySword.Damage,
-                    Fightspeed = mySword.Fightspeed,
-                    ImageName = mySword.ImageName,
-                    Name = mySword.Name,
-                    Value = mySword.Value,
-                    Level = mySword.Level,
-                    Swordpic = mySword.Swordpic
-                };
-                myBag.Add(bag);
-            }
-            else
-            {
-                Console.WriteLine("Your bag is full! Do you want to exchange weapon?(Y / N)");
-                if (Console.ReadLine() == "Y")
-                {
-                   
-                    Console.WriteLine("Enter a number of the weapon that you want to discard.(1..{0})", myBag.Count);
-                    string op = Console.ReadLine();
-                    while ((Convert.ToInt32(op) > myBag.Count)||(Convert.ToInt32(op)==0))
-                    {
-                        Console.WriteLine("Enter number in (1..{0})", myBag.Count);
-                        op = Console.ReadLine();
-                    }
-                    myBag.Remove(myBag.ElementAt(Convert.ToInt16(op) -1));
-                    Bag bag = new Bag
-                    {
-                        Creator = mySword.Creator,
-                        CriticalHitChance = mySword.CriticalHitChance,
-                        Damage = mySword.Damage,
-                        Fightspeed = mySword.Fightspeed,
-                        ImageName = mySword.ImageName,
-                        Name = mySword.Name,
-                        Value = mySword.Value,
-                        Level = mySword.Level,
-                        Swordpic = mySword.Swordpic
-                    };
-                    myBag.Add(bag);
-                    Console.WriteLine("Your bag now:");
-                    Console.WriteLine("-----------------");
-                    foreach (var p in myBag)
-                    {
-                        Console.WriteLine(p.Name);
-                    }
-                    Console.WriteLine("-----------------");
-                }
-            }
-        }
     }
-    // .MakeSword (combines sword blade and handle) + .AddToBag methods
 
     class LegendarySword : BaseWeapon
     {
         public Bitmap Swordpic { get; set; }
-        public static void AddToBag(LegendarySword mySword, List<Bag> myBag)
-        {
-            if (myBag.Count < 6) // 6 is bag capacity (if you want to change it, change '6' and in .AddToBag method in Sword class)
-            {
-                Bag bag = new Bag
-                {
-                    Creator = mySword.Creator,
-                    CriticalHitChance = mySword.CriticalHitChance,
-                    Damage = mySword.Damage,
-                    Fightspeed = mySword.Fightspeed,
-                    ImageName = mySword.ImageName,
-                    Name = mySword.Name,
-                    Value = mySword.Value,
-                    Level = mySword.Level,
-                    Swordpic = mySword.Swordpic
-                };
-                myBag.Add(bag);
-            }
-            else
-            {
-                Console.WriteLine("Your bag is full! Do you want to exchange weapon?(Y / N)");
-                if (Console.ReadLine() == "Y")
-                {
-                    Console.WriteLine("Enter a number of the weapon that you want to discard.(1..{0})", myBag.Count);
-                    string op = Console.ReadLine();
-                    while ((Convert.ToInt32(op) > myBag.Count) || (Convert.ToInt32(op) == 0))
-                    {
-                        Console.WriteLine("Enter number in (1..{0})", myBag.Count);
-                        op = Console.ReadLine();
-                    }
-                    myBag.Remove(myBag.ElementAt(Convert.ToInt16(op) - 1));
-                    Bag bag = new Bag
-                    {
-                        Creator = mySword.Creator,
-                        CriticalHitChance = mySword.CriticalHitChance,
-                        Damage = mySword.Damage,
-                        Fightspeed = mySword.Fightspeed,
-                        ImageName = mySword.ImageName,
-                        Name = mySword.Name,
-                        Value = mySword.Value,
-                        Level = mySword.Level,
-                        Swordpic = mySword.Swordpic
-                    };
-                    myBag.Add(bag);
-                    Console.WriteLine("Your bag now:");
-                    Console.WriteLine("-----------------");
-                    foreach (var p in myBag)
-                    {
-                        Console.WriteLine(p.Name);
-                    }
-                    Console.WriteLine("-----------------");
-                }
-            }
-        }
     }
 
-    class Bag :BaseWeapon
+    class Bag : BaseWeapon
     {
         public Bitmap Swordpic { get; set; }
+
+        public Bag(BaseWeapon mySword)
+        {
+            Creator = mySword.Creator;
+            CriticalHitChance = mySword.CriticalHitChance;
+            Damage = mySword.Damage;
+            Fightspeed = mySword.Fightspeed;
+            ImageName = mySword.ImageName;
+            Name = mySword.Name;
+            Value = mySword.Value;
+            Level = mySword.Level;
+            Swordpic = mySword.Picture;
+        }
+
         public static int SellSword(List<Bag> myBag, int number)
         {
-            int t= myBag.ElementAt(number).Value;
-            myBag.Remove(myBag.ElementAt(number));
-            return t; 
+            var cost = myBag[number].Value;
+            myBag.RemoveAt(number);
+            return cost; 
         }
     }
     // .SellSword method
@@ -349,6 +289,7 @@ namespace WeaponCeater
     class HowIGetWeapon 
     {
         public Bitmap pic { get; set; }
+
         public static void FindChest(Sword mySword,List<LegendarySword> legendarySword,List<SwordBlade> Sblade, List<SwordHandle> Shandle,List<Bag> myBag,string alfa)
         {
             Random e = new Random();
@@ -365,7 +306,7 @@ namespace WeaponCeater
                    , mySword.Fightspeed
                    , mySword.CriticalHitChance
                    , mySword.Value);
-                Sword.AddToBag(mySword, myBag);
+                BaseWeapon.AddToBag(mySword, myBag);
 
             }
             else
@@ -382,9 +323,10 @@ namespace WeaponCeater
                , legendarySword.ElementAt(q).CriticalHitChance
                , legendarySword.ElementAt(q).Value);
                 legendarySword.ElementAt(q).Swordpic.Save(alfa + @"CreatedSword\" + legendarySword.ElementAt(q).Name + ".bmp");
-                LegendarySword.AddToBag(legendarySword.ElementAt(q), myBag);
+                BaseWeapon.AddToBag(legendarySword.ElementAt(q), myBag);
             }
         }
+
         public static void KillEnemy(Sword mySword, List<LegendarySword> legendarySword, List<SwordBlade> Sblade, List<SwordHandle> Shandle, List<Bag> myBag,string alfa)
         {
             Random e = new Random();
@@ -401,7 +343,7 @@ namespace WeaponCeater
                    , mySword.Fightspeed
                    , mySword.CriticalHitChance
                    , mySword.Value);
-                Sword.AddToBag(mySword, myBag);
+                BaseWeapon.AddToBag(mySword, myBag);
 
             }
             else
@@ -418,7 +360,7 @@ namespace WeaponCeater
                , legendarySword.ElementAt(q).CriticalHitChance
                , legendarySword.ElementAt(q).Value);
                 legendarySword.ElementAt(q).Swordpic.Save(alfa + @"CreatedSword\" + legendarySword.ElementAt(q).Name + ".bmp");
-                LegendarySword.AddToBag(legendarySword.ElementAt(q), myBag);
+                BaseWeapon.AddToBag(legendarySword.ElementAt(q), myBag);
             }
         }
     }
