@@ -8,9 +8,9 @@ namespace WeaponCeater
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            // .txt files way
+            // .txt files dataPath
             var basePath = Directory.GetCurrentDirectory().Substring(0, Directory.GetCurrentDirectory().Length - 9 - 13);
             var swordBladesPath = Path.Combine(basePath, "swordblade.txt");
             var swordHandlesPath = Path.Combine(basePath, "swordhandle.txt");
@@ -18,14 +18,11 @@ namespace WeaponCeater
             var picturesPath = Path.Combine(basePath, "images");
 
             // lists and variables initialization
-            var swordBlades = new List<SwordBlade>();
-            var swordHandles = new List<SwordHandle>();
-            var legendarySwords = new List<LegendarySword>();
             var myBags = new List<Bag>();
             var mySword = new Sword();
-            SwordBlade.ReadData(swordBladesPath, swordBlades, picturesPath);
-            SwordHandle.ReadData(swordHandlesPath, swordHandles, picturesPath);
-            LegendarySword.ReadData(legendarySwordsPath, legendarySwords, picturesPath);
+            var swordBlades = BaseWeapon.ReadData(() => new SwordBlade(), swordBladesPath, picturesPath);
+            var swordHandles = BaseWeapon.ReadData(() => new SwordHandle(), swordHandlesPath, picturesPath);
+            var legendarySwords = BaseWeapon.ReadData(() => new LegendarySword(), legendarySwordsPath, picturesPath);
 
             // get 8 swords 
             HowIGetWeapon.FindChest(mySword, legendarySwords, swordBlades, swordHandles, myBags, basePath);
@@ -73,212 +70,153 @@ namespace WeaponCeater
         }
     }
 
-    class Weapon
+    // basic class, creates all the characteristics of a sword
+    abstract class BaseWeapon
     {
+        public Bitmap Picture { get; set; }
+
         public string Name { get; set; }
         public int Fightspeed { get; set; }
         public int Damage { get; set; }
         public int CriticalHitChance { get; set; }
         public int Value { get; set; }
-        public string Imageway { get; set; }
+        public string ImageName { get; set; }
         public string Creator { get; set; }
         public int Level { get; set; }
-    }
-    // basic class, creates all the characteristics of a sword
 
-    class SwordBlade : Weapon
-    {
-        public Bitmap bladepic { get; set; }
-        public static void ReadData(string way, List<SwordBlade> Sblade, string Picway)
+        public static List<T> ReadData<T>(Func<T> constructWeapon, string dataPath, string picturesPath)
+            where T : BaseWeapon
         {
+            var swordBlades = new List<T>();
 
-            string qwerty = "";
-            int i = 0;
-            int j = 0;
-            int counter = 0;
-            string[] wordlist = { "", "", "", "", "", "", "", "" };
-            string line = "";
-            StreamReader file = new StreamReader(way);
-            while ((qwerty = file.ReadLine()) != null)
+            using (var stream = new StreamReader(dataPath))
             {
-                char[] arr = qwerty.ToCharArray();
-                i = 0;
-                j = 0;
-                while (arr[i] != '.')
+                string line;
+                while ((line = stream.ReadLine()) != null)
                 {
-                    if (arr[i] != ' ')
-                    {
-                        line += arr[i];
-                    }
-                    else
-                    {
-                        wordlist[j] = line;
-                        line = "";
-                        j++;
-                    }
-                    i++;
+                    var wordlist = line.Split(' ');
+
+                    var blade = constructWeapon();
+                    blade.Name = wordlist[0];
+                    blade.Fightspeed = Convert.ToInt32(wordlist[1]);
+                    blade.Damage = Convert.ToInt32(wordlist[2]);
+                    blade.CriticalHitChance = Convert.ToInt32(wordlist[3]);
+                    blade.Value = Convert.ToInt32(wordlist[4]);
+                    blade.Creator = wordlist[5];
+                    blade.Level = Convert.ToInt32(wordlist[6]);
+                    blade.ImageName = wordlist[7];
+                    
+
+                    var fileName = string.Format("{0}.bmp", blade.ImageName);
+                    var filePath = Path.Combine(picturesPath, fileName);
+                    blade.Picture = new Bitmap(filePath);
+
+                    swordBlades.Add(blade);
                 }
-
-                var a = new SwordBlade();
-                a.Name = wordlist[0];
-                a.Fightspeed = Convert.ToInt32(wordlist[1]);
-                a.Damage = Convert.ToInt32(wordlist[2]);
-                a.CriticalHitChance = Convert.ToInt32(wordlist[3]);
-                a.Value = Convert.ToInt32(wordlist[4]);
-                a.Creator = wordlist[5];
-                a.Level = Convert.ToInt32(wordlist[6]);
-                a.Imageway = wordlist[7];
-                var fileName = string.Format("{0}.bmp", a.Imageway);
-                var filePath = Path.Combine(Picway, fileName);
-                a.bladepic = new Bitmap(filePath);
-
-                Sblade.Add(a);
-
-                counter++;
             }
 
-            file.Close();
-
+            return swordBlades;
         }
     }
-    class SwordHandle : Weapon
+
+    class SwordBlade : BaseWeapon
     {
-        public Bitmap handlepic { get; set; }
-        public static void ReadData(string way, List<SwordHandle> Shandle, string Picway)
-        {
-
-            string qwerty = "";
-            int i = 0;
-            int j = 0;
-            int counter = 0;
-            string[] wordlist = { "", "", "", "", "", "", "", "" };
-            string line = "";
-            StreamReader file = new StreamReader(way);
-            //var Dict = new List<Word>();
-            while ((qwerty = file.ReadLine()) != null)
-            {
-                char[] arr = qwerty.ToCharArray();
-                i = 0;
-                j = 0;
-                while (arr[i] != '.')
-                {
-                    if (arr[i] != ' ')
-                    {
-                        line += arr[i];
-                    }
-                    else
-                    {
-                        wordlist[j] = line;
-                        line = "";
-                        j++;
-                    }
-                    i++;
-                }
-
-                var a = new SwordHandle();
-                a.Name = wordlist[0];
-                a.Fightspeed = Convert.ToInt32(wordlist[1]);
-                a.Damage = Convert.ToInt32(wordlist[2]);
-                a.CriticalHitChance = Convert.ToInt32(wordlist[3]);
-                a.Value = Convert.ToInt32(wordlist[4]);
-                a.Creator = wordlist[5];
-                a.Level = Convert.ToInt32(wordlist[6]);
-                a.Imageway = wordlist[7];
-                var fileName = string.Format("{0}.bmp", a.Imageway);
-                var filePath = Path.Combine(Picway, fileName);
-                a.handlepic = new Bitmap(filePath);
-
-                Shandle.Add(a);
-
-                counter++;
-            }
-
-            file.Close();
-
-        }
     }
-    // .ReadData method (read .txt files)
 
-    class Sword : Weapon
+    class SwordHandle : BaseWeapon
+    {
+    }
+
+    class Sword : BaseWeapon
     {
         public Bitmap Swordpic { get; set; }
-        public static void MakeSword(List<SwordBlade> Sblade, List<SwordHandle> Shandle, Sword mySword, string alfa)
+
+        private class CreatorBonus
         {
-            Random e = new Random();
+            public double Damage { get; set; }
+            public double FightSpeed { get; set; }
+            public int CriticalHitChance { get; set; }
+            public double Value { get; set; }
 
-            int x = e.Next(0, Sblade.Count - 1);
-            int y = e.Next(0, Shandle.Count - 1);
-
-            mySword.Level = (Sblade.ElementAt(x).Level+ Shandle.ElementAt(y).Level)/2;
-            mySword.Fightspeed = (Sblade.ElementAt(x).Fightspeed + Shandle.ElementAt(y).Fightspeed) / 2;
-            mySword.Damage = (Sblade.ElementAt(x).Damage + Shandle.ElementAt(y).Damage) / 2;
-            mySword.CriticalHitChance = (Sblade.ElementAt(x).CriticalHitChance + Shandle.ElementAt(y).CriticalHitChance) / 2;
-            mySword.Value = (Sblade.ElementAt(x).Value + Shandle.ElementAt(y).Value) / 2;
-            mySword.Creator = Sblade.ElementAt(x).Creator +@"/"+ Shandle.ElementAt(y).Creator;
-            mySword.Name = Sblade.ElementAt(x).Name +" "+ Shandle.ElementAt(y).Name;
-
-            
-            for (int z = 0; z < Shandle.ElementAt(y).handlepic.Width; z++)
+            public CreatorBonus()
             {
-                for (int t = 400; t < Shandle.ElementAt(y).handlepic.Height; t++)
-                {
-                    Color pixelColor = Shandle.ElementAt(y).handlepic.GetPixel(z, t);
-                    Sblade.ElementAt(x).bladepic.SetPixel(z, t, pixelColor);
-                }
-            }
-            mySword.Swordpic = Sblade.ElementAt(x).bladepic;
-            
-            Sblade.ElementAt(x).bladepic.Save(alfa + @"CreatedSword\"+ mySword.Name +".bmp");
-
-
-
-            if (Sblade.ElementAt(x).Creator == "human")
-            {
-                mySword.Damage=Convert.ToInt32(mySword.Damage*1.1);
-            }
-            else if (Sblade.ElementAt(x).Creator == "elf") 
-            {
-                mySword.Fightspeed = Convert.ToInt32(mySword.Fightspeed * 1.15);
-            }
-            else if (Sblade.ElementAt(x).Creator == "dwarf") 
-            {
-                mySword.CriticalHitChance = mySword.CriticalHitChance + 5;
-            }
-            else if (Sblade.ElementAt(x).Creator == "orc")  
-            {
-                mySword.Value = Convert.ToInt32(mySword.Value * 0.85);
-            }
-            else if (Sblade.ElementAt(y).Creator == "daemon")
-            {
-                mySword.Damage = Convert.ToInt32(mySword.Damage * 1.40);
-                mySword.Value = Convert.ToInt32(mySword.Value * 1.10);
-                mySword.Fightspeed = Convert.ToInt32(mySword.Fightspeed * 0.90);
+                Damage = 1.0;
+                FightSpeed = 1.0;
+                CriticalHitChance = 0;
+                Value = 1.0;
             }
 
-
-            if (Shandle.ElementAt(y).Creator == "daemon")
+            public void Apply(Sword sword)
             {
-                mySword.CriticalHitChance = mySword.CriticalHitChance +10;
-                mySword.Damage = Convert.ToInt32(mySword.Damage * 0.90);
-            }
-            else if (Shandle.ElementAt(y).Creator == "orc")
-            {
-                mySword.Fightspeed = Convert.ToInt32(mySword.Fightspeed * 1.20);
-            }
-            else if (Shandle.ElementAt(y).Creator == "dwarf")
-            {
-                mySword.Value = Convert.ToInt32(mySword.Value * 1.30);
-                mySword.Damage = Convert.ToInt32(mySword.Damage * 1.50);
-            }
-            else if (Shandle.ElementAt(y).Creator == "elf")
-            {
-                mySword.Damage = Convert.ToInt32(mySword.Damage * 1.25);
-            }
-            else if (Shandle.ElementAt(y).Creator == "human")
-            {
-                mySword.CriticalHitChance = mySword.CriticalHitChance + 5;
+                sword.Damage = Convert.ToInt32(sword.Damage*Damage);
+                sword.Fightspeed = Convert.ToInt32(sword.Fightspeed * FightSpeed);
+                sword.Value = Convert.ToInt32(sword.Value * Value);
+                sword.CriticalHitChance = sword.CriticalHitChance + CriticalHitChance;
             }
         }
+
+        private static readonly Dictionary<string, CreatorBonus> BladeBonuses = new Dictionary<string, CreatorBonus>
+        {
+            { "human", new CreatorBonus{ Damage = 1.1 } },
+            { "eld",   new CreatorBonus{ FightSpeed = 1.15 } },
+            { "dwarf", new CreatorBonus{ CriticalHitChance = 5 } },
+            { "orc",   new CreatorBonus{ Value = 0.85 } },
+            { "daemon",new CreatorBonus{ Damage = 1.40, FightSpeed = 0.90, Value = 1.10 } }
+        };
+
+        private static readonly Dictionary<string, CreatorBonus> HandleBonuses = new Dictionary<string, CreatorBonus>
+        {
+            { "human", new CreatorBonus{ CriticalHitChance = 5} },
+            { "eld",   new CreatorBonus{ Damage = 1.25 } },
+            { "dwarf", new CreatorBonus{ Damage = 1.50, Value = 1.30 } },
+            { "orc",   new CreatorBonus{ FightSpeed = 1.20} },
+            { "daemon",new CreatorBonus{ CriticalHitChance = 10, Damage = 0.90 } }
+        }; 
+
+        public static void MakeSword(List<SwordBlade> swordBlades, List<SwordHandle> swordHandles, Sword mySword, string basePath)
+        {
+            var random = new Random();
+
+            var bladeIndex = random.Next(0, swordBlades.Count - 1);
+            var blade = swordBlades[bladeIndex];
+            var handleIndex = random.Next(0, swordHandles.Count - 1);
+            var handle = swordHandles[handleIndex];
+
+            mySword.Level = (blade.Level + handle.Level)/2;
+            mySword.Fightspeed = (blade.Fightspeed + handle.Fightspeed) / 2;
+            mySword.Damage = (blade.Damage + handle.Damage) / 2;
+            mySword.CriticalHitChance = (blade.CriticalHitChance + handle.CriticalHitChance) / 2;
+            mySword.Value = (blade.Value + handle.Value) / 2;
+            mySword.Creator = blade.Creator +@"/"+ handle.Creator;
+            mySword.Name = blade.Name +" "+ handle.Name;
+
+            mySword.Swordpic = new Bitmap(blade.Picture);
+            for (var z = 0; z < handle.Picture.Width; z++)
+            {
+                for (var t = 400; t < handle.Picture.Height; t++)
+                {
+                    Color pixelColor = handle.Picture.GetPixel(z, t);
+                    mySword.Swordpic.SetPixel(z, t, pixelColor);
+                }
+            }
+
+            var fileName = string.Format("{0}.bmp", mySword.Name);
+            var filePath = Path.Combine(basePath, "CreatedSword", fileName);
+            blade.Picture.Save(filePath);
+
+            if (BladeBonuses.ContainsKey(blade.Creator))
+            {
+                var bonus = BladeBonuses[blade.Creator];
+                bonus.Apply(mySword);
+            }
+
+            if (HandleBonuses.ContainsKey(handle.Creator))
+            {
+                var bonus = HandleBonuses[handle.Creator];
+                bonus.Apply(mySword);
+            }
+        }
+
         public static void AddToBag(Sword mySword, List<Bag> myBag)
         {
             if (myBag.Count < 6) // 6 is bag capacity (if you want to change it, change '6' and in .AddToBag method in LegendarySword class)
@@ -289,7 +227,7 @@ namespace WeaponCeater
                     CriticalHitChance = mySword.CriticalHitChance,
                     Damage = mySword.Damage,
                     Fightspeed = mySword.Fightspeed,
-                    Imageway = mySword.Imageway,
+                    ImageName = mySword.ImageName,
                     Name = mySword.Name,
                     Value = mySword.Value,
                     Level = mySword.Level,
@@ -317,7 +255,7 @@ namespace WeaponCeater
                         CriticalHitChance = mySword.CriticalHitChance,
                         Damage = mySword.Damage,
                         Fightspeed = mySword.Fightspeed,
-                        Imageway = mySword.Imageway,
+                        ImageName = mySword.ImageName,
                         Name = mySword.Name,
                         Value = mySword.Value,
                         Level = mySword.Level,
@@ -337,7 +275,7 @@ namespace WeaponCeater
     }
     // .MakeSword (combines sword blade and handle) + .AddToBag methods
 
-    class LegendarySword : Weapon
+    class LegendarySword : BaseWeapon
     {
         public Bitmap Swordpic { get; set; }
         public static void AddToBag(LegendarySword mySword, List<Bag> myBag)
@@ -350,7 +288,7 @@ namespace WeaponCeater
                     CriticalHitChance = mySword.CriticalHitChance,
                     Damage = mySword.Damage,
                     Fightspeed = mySword.Fightspeed,
-                    Imageway = mySword.Imageway,
+                    ImageName = mySword.ImageName,
                     Name = mySword.Name,
                     Value = mySword.Value,
                     Level = mySword.Level,
@@ -377,7 +315,7 @@ namespace WeaponCeater
                         CriticalHitChance = mySword.CriticalHitChance,
                         Damage = mySword.Damage,
                         Fightspeed = mySword.Fightspeed,
-                        Imageway = mySword.Imageway,
+                        ImageName = mySword.ImageName,
                         Name = mySword.Name,
                         Value = mySword.Value,
                         Level = mySword.Level,
@@ -394,62 +332,9 @@ namespace WeaponCeater
                 }
             }
         }
-
-        public static void ReadData(string way, List<LegendarySword> legendarySword, string Picway)
-        {
-            string qwerty = "";
-            int i = 0;
-            int j = 0;
-            int counter = 0;
-            string[] wordlist = { "", "", "", "", "", "", "", "" };
-            string line = "";
-            StreamReader file = new StreamReader(way);
-            while ((qwerty = file.ReadLine()) != null)
-            {
-                char[] arr = qwerty.ToCharArray();
-                i = 0;
-                j = 0;
-                while (arr[i] != '.')
-                {
-                    if (arr[i] != ' ')
-                    {
-                        line += arr[i];
-                    }
-                    else
-                    {
-                        wordlist[j] = line;
-                        line = "";
-                        j++;
-                    }
-                    i++;
-                }
-
-                var a = new LegendarySword();
-                a.Name = wordlist[0];
-                a.Fightspeed = Convert.ToInt32(wordlist[1]);
-                a.Damage = Convert.ToInt32(wordlist[2]);
-                a.CriticalHitChance = Convert.ToInt32(wordlist[3]);
-                a.Value = Convert.ToInt32(wordlist[4]);
-                a.Creator = wordlist[5];
-                a.Level = Convert.ToInt32(wordlist[6]);
-                a.Imageway = wordlist[7];
-
-                var fileName = string.Format("{0}.bmp", a.Imageway);
-                var filePath = Path.Combine(Picway, fileName);
-                a.Swordpic = new Bitmap(filePath);
-
-                legendarySword.Add(a);
-
-                counter++;
-            }
-
-            file.Close();
-
-        }
     }
-    // .ReadData + .AddToBag methods
 
-    class Bag :Weapon
+    class Bag :BaseWeapon
     {
         public Bitmap Swordpic { get; set; }
         public static int SellSword(List<Bag> myBag, int number)
