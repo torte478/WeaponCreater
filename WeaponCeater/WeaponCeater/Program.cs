@@ -9,12 +9,10 @@ namespace WeaponCeater
     {
         static void Main()
         {
-            var legendarySwords1 = new List<LegendarySword>();
-            var blades = new List<SwordBlade>();
-            var handles = new List<SwordHandle>();
-            var gui = new UserInterface();
+            var swordLoader = new WeaponLoader();
             var pathManager = new PathManager();
-            var weaponGenerator = new WeaponGenerator(legendarySwords1, blades, handles, pathManager);
+            var weaponGenerator = new WeaponGenerator(swordLoader, pathManager);
+            var gui = new UserInterface();
             var game = new Game(weaponGenerator, gui, pathManager);
             game.Play();
 //            return;

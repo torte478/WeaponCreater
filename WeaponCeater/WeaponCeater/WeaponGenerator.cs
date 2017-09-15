@@ -59,11 +59,11 @@ namespace WeaponCeater
 
         private readonly Random random = new Random();
 
-        public WeaponGenerator(List<LegendarySword> legendarySwords, List<SwordBlade> swordBlades, List<SwordHandle> swordHandles, PathManager pathManager)
+        public WeaponGenerator(WeaponLoader loader, PathManager pathManager)
         {
-            this.legendarySwords = legendarySwords;
-            this.swordBlades = swordBlades;
-            this.swordHandles = swordHandles;
+            legendarySwords = loader.LoadLegendarySwords();
+            swordBlades = loader.LoadSwordBlades();
+            swordHandles = loader.LoadSwordHandles();
 
             this.pathManager = pathManager;
         }
