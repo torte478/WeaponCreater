@@ -36,5 +36,10 @@
         {
             throw new System.NotImplementedException();
         }
+
+        public void ShowWeapon(ISword weapon)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

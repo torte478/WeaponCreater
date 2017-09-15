@@ -43,16 +43,17 @@ namespace WeaponCeater
 
         private void FindChest()
         {
-            GetWeapon(ChestLegendarySwordChance);
+            FindWeapon(ChestLegendarySwordChance);
         }
 
-        private void GetWeapon(int legendarySwordChance)
+        private void FindWeapon(int legendarySwordChance)
         {
             var weapon = weaponGenerator.Generate(legendarySwordChance);
+            gui.ShowWeapon(weapon);
             TryPutWeaponToInventory(weapon);
         }
 
-        private void TryPutWeaponToInventory(Weapon weapon)
+        private void TryPutWeaponToInventory(ISword weapon)
         {
             if (inventory.IsFull())
             {
@@ -66,7 +67,7 @@ namespace WeaponCeater
             }
         }
 
-        private bool TryExchangeWeapon(Weapon weapon)
+        private bool TryExchangeWeapon(ISword weapon)
         {
             var needExchange = gui.AskSwordReplace();
             if (needExchange)
@@ -76,7 +77,7 @@ namespace WeaponCeater
             return needExchange;
         }
 
-        private void ExcangedWeapon(Weapon weapon)
+        private void ExcangedWeapon(ISword weapon)
         {
             var removedWeaponIndex = gui.AskInventoryBagIndex();
             inventory.RemoveAt(removedWeaponIndex);
@@ -85,7 +86,7 @@ namespace WeaponCeater
 
         private void KillEnemy()
         {
-            GetWeapon(EnemyLegendarySwordChance);
+            FindWeapon(EnemyLegendarySwordChance);
         }
 
         private void ShowTotalWeaponCost()

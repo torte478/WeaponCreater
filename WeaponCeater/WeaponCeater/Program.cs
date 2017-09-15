@@ -9,12 +9,15 @@ namespace WeaponCeater
     {
         static void Main()
         {
-//            var weaponGenerator = new WeaponGenerator();
-//            var gui = new UserInterface();
-//            var pathManager = new PathManager();
-//            var game = new Game(weaponGenerator, gui, pathManager);
-//            game.Play();
-
+            var legendarySwords1 = new List<LegendarySword>();
+            var blades = new List<SwordBlade>();
+            var handles = new List<SwordHandle>();
+            var gui = new UserInterface();
+            var pathManager = new PathManager();
+            var weaponGenerator = new WeaponGenerator(legendarySwords1, blades, handles, pathManager);
+            var game = new Game(weaponGenerator, gui, pathManager);
+            game.Play();
+//            return;
             // .txt files dataPath
             var basePath = Directory.GetCurrentDirectory().Substring(0, Directory.GetCurrentDirectory().Length - 9 - 13);
             var swordBladesPath = Path.Combine(basePath, "swordblade.txt");
@@ -76,8 +79,9 @@ namespace WeaponCeater
     }
 
     // basic class, creates all the characteristics of a sword
-    abstract class BaseWeapon
+    public abstract class BaseWeapon : ISword
     {
+        public WeaponStatistics Stats { get; set; }
         public Bitmap Picture { get; set; }
 
         public string Name { get; set; }
@@ -175,15 +179,34 @@ namespace WeaponCeater
         }
     }
 
-    class SwordBlade : BaseWeapon
+    public class SwordBlade : BaseWeapon, IWeaponPart
     {
+        public WeaponStatistics Stats { get; set; }
     }
 
-    class SwordHandle : BaseWeapon
+    public class SwordHandle : BaseWeapon, IWeaponPart
     {
+        public WeaponStatistics Stats { get; set; }
     }
 
-    class Sword : BaseWeapon
+    public class WeaponStatistics
+    {
+        public string Name { get; set; }
+        public int Fightspeed { get; set; }
+        public int Damage { get; set; }
+        public int CriticalHitChance { get; set; }
+        public int Value { get; set; }
+        public string ImageName { get; set; }
+        public string Creator { get; set; }
+        public int Level { get; set; }
+
+        public WeaponStatistics Combine(WeaponStatistics stats)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class Sword : BaseWeapon, ISword
     {
         private class CreatorBonus
         {
@@ -225,7 +248,9 @@ namespace WeaponCeater
             { "dwarf", new CreatorBonus{ Damage = 1.50, Value = 1.30 } },
             { "orc",   new CreatorBonus{ FightSpeed = 1.20} },
             { "daemon",new CreatorBonus{ CriticalHitChance = 10, Damage = 0.90 } }
-        }; 
+        };
+
+        public WeaponStatistics Stats { get; set; }
 
         public static void MakeSword(List<SwordBlade> swordBlades, List<SwordHandle> swordHandles, Sword mySword, string basePath)
         {
@@ -272,11 +297,12 @@ namespace WeaponCeater
         }
     }
 
-    class LegendarySword : BaseWeapon
+    public class LegendarySword : BaseWeapon, ISword
     {
+
     }
 
-    class Bag : BaseWeapon
+    public class Bag : BaseWeapon
     {
         public Bitmap Swordpic { get; set; }
 

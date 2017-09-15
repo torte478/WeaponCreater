@@ -44,6 +44,8 @@
   <ItemGroup>
     <Compile Include="Game.cs" />
     <Compile Include="Inventory.cs" />
+    <Compile Include="ISword.cs" />
+    <Compile Include="IWeaponPart.cs" />
     <Compile Include="PathManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -7,7 +7,7 @@
             throw new System.NotImplementedException();
         }
 
-        public void Add(Weapon weapon)
+        public void Add(ISword weapon)
         {
             throw new System.NotImplementedException();
         }
