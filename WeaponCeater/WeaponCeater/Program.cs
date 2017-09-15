@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using System.Drawing;
 
@@ -10,6 +9,12 @@ namespace WeaponCeater
     {
         static void Main()
         {
+//            var weaponGenerator = new WeaponGenerator();
+//            var gui = new UserInterface();
+//            var pathManager = new PathManager();
+//            var game = new Game(weaponGenerator, gui, pathManager);
+//            game.Play();
+
             // .txt files dataPath
             var basePath = Directory.GetCurrentDirectory().Substring(0, Directory.GetCurrentDirectory().Length - 9 - 13);
             var swordBladesPath = Path.Combine(basePath, "swordblade.txt");
@@ -153,6 +158,20 @@ namespace WeaponCeater
                     Console.WriteLine("-----------------");
                 }
             }
+
+        }
+
+        public override string ToString()
+        {
+            return string.Format(
+                    "Name: {0}, Creator: {1}, Level: {2}, Damage: {3}, Fightspeed: {4} hit per s, CriticalHitChance: {5}%, Value: {6}",
+                    Name,
+                    Creator,
+                    Level,
+                    Damage,
+                    Fightspeed,
+                    CriticalHitChance,
+                    Value);
         }
     }
 
@@ -166,8 +185,6 @@ namespace WeaponCeater
 
     class Sword : BaseWeapon
     {
-        public Bitmap Swordpic { get; set; }
-
         private class CreatorBonus
         {
             public double Damage { get; set; }
@@ -227,19 +244,19 @@ namespace WeaponCeater
             mySword.Creator = blade.Creator +@"/"+ handle.Creator;
             mySword.Name = blade.Name +" "+ handle.Name;
 
-            mySword.Swordpic = new Bitmap(blade.Picture);
+            mySword.Picture = new Bitmap(blade.Picture);
             for (var z = 0; z < handle.Picture.Width; z++)
             {
                 for (var t = 400; t < handle.Picture.Height; t++)
                 {
                     Color pixelColor = handle.Picture.GetPixel(z, t);
-                    mySword.Swordpic.SetPixel(z, t, pixelColor);
+                    mySword.Picture.SetPixel(z, t, pixelColor);
                 }
             }
 
             var fileName = string.Format("{0}.bmp", mySword.Name);
             var filePath = Path.Combine(basePath, "CreatedSword", fileName);
-            blade.Picture.Save(filePath);
+            mySword.Picture.Save(filePath);
 
             if (BladeBonuses.ContainsKey(blade.Creator))
             {
@@ -257,7 +274,6 @@ namespace WeaponCeater
 
     class LegendarySword : BaseWeapon
     {
-        public Bitmap Swordpic { get; set; }
     }
 
     class Bag : BaseWeapon
@@ -284,85 +300,40 @@ namespace WeaponCeater
             return cost; 
         }
     }
-    // .SellSword method
 
     class HowIGetWeapon 
     {
-        public Bitmap pic { get; set; }
-
-        public static void FindChest(Sword mySword,List<LegendarySword> legendarySword,List<SwordBlade> Sblade, List<SwordHandle> Shandle,List<Bag> myBag,string alfa)
+        public static void FindChest(Sword mySword, List<LegendarySword> legendarySword, List<SwordBlade> Sblade, List<SwordHandle> Shandle, List<Bag> myBag, string alfa)
         {
-            Random e = new Random();
-            int u = 0;
-            if ((u = e.Next(0, 5)) != 0) // (0, 5) - 1/5 (20%)  chance to get legendary sword
-            {
-
-                Sword.MakeSword(Sblade, Shandle, mySword,alfa);
-                Console.WriteLine("Name: {0}, Creator: {1}, Level: {2}, Damage: {3}, Fightspeed: {4} hit per s, CriticalHitChance: {5}%, Value: {6}"
-                   , mySword.Name
-                   , mySword.Creator
-                   , mySword.Level
-                   , mySword.Damage
-                   , mySword.Fightspeed
-                   , mySword.CriticalHitChance
-                   , mySword.Value);
-                BaseWeapon.AddToBag(mySword, myBag);
-
-            }
-            else
-            {
-
-                int q = e.Next(0, legendarySword.Count);
-
-                Console.WriteLine("Name: {0}, Creator: {1}, Level: {2}, Damage: {3}, Fightspeed: {4} hit per s, CriticalHitChance: {5}%, Value: {6}"
-               , legendarySword.ElementAt(q).Name
-               , legendarySword.ElementAt(q).Creator
-               , legendarySword.ElementAt(q).Level
-               , legendarySword.ElementAt(q).Damage
-               , legendarySword.ElementAt(q).Fightspeed
-               , legendarySword.ElementAt(q).CriticalHitChance
-               , legendarySword.ElementAt(q).Value);
-                legendarySword.ElementAt(q).Swordpic.Save(alfa + @"CreatedSword\" + legendarySword.ElementAt(q).Name + ".bmp");
-                BaseWeapon.AddToBag(legendarySword.ElementAt(q), myBag);
-            }
+            GetSword(mySword, legendarySword, Sblade, Shandle, myBag, alfa, 5);
         }
 
-        public static void KillEnemy(Sword mySword, List<LegendarySword> legendarySword, List<SwordBlade> Sblade, List<SwordHandle> Shandle, List<Bag> myBag,string alfa)
+        public static void KillEnemy(Sword mySword, List<LegendarySword> legendarySword, List<SwordBlade> Sblade, List<SwordHandle> Shandle, List<Bag> myBag, string alfa)
         {
-            Random e = new Random();
-            int u = 0;
-            if ((u = e.Next(0, 10)) != 0) // (0, 10) - 1/10 (10%)  chance to get legendary sword
+            GetSword(mySword, legendarySword, Sblade, Shandle, myBag, alfa, 10);
+        }
+
+        private static void GetSword(Sword mySword, List<LegendarySword> legendarySword, List<SwordBlade> Sblade, List<SwordHandle> Shandle, List<Bag> myBag, string alfa, int chanceCount)
+        {
+            var random = new Random();
+            if (random.Next(0, chanceCount) != 0)
             {
 
-                Sword.MakeSword(Sblade, Shandle, mySword,alfa);
-                Console.WriteLine("Name: {0}, Creator: {1}, Level: {2}, Damage: {3}, Fightspeed: {4} hit per s, CriticalHitChance: {5}%, Value: {6}"
-                   , mySword.Name
-                   , mySword.Creator
-                   , mySword.Level
-                   , mySword.Damage
-                   , mySword.Fightspeed
-                   , mySword.CriticalHitChance
-                   , mySword.Value);
+                Sword.MakeSword(Sblade, Shandle, mySword, alfa);
+                Console.WriteLine(mySword.ToString());
                 BaseWeapon.AddToBag(mySword, myBag);
-
             }
             else
             {
+                var swordIndex = random.Next(0, legendarySword.Count);
+                var sword = legendarySword[swordIndex];
 
-                int q = e.Next(0, legendarySword.Count);
-
-                Console.WriteLine("Name: {0}, Creator: {1}, Level: {2}, Damage: {3}, Fightspeed: {4} hit per s, CriticalHitChance: {5}%, Value: {6}"
-               , legendarySword.ElementAt(q).Name
-               , legendarySword.ElementAt(q).Creator
-               , legendarySword.ElementAt(q).Level
-               , legendarySword.ElementAt(q).Damage
-               , legendarySword.ElementAt(q).Fightspeed
-               , legendarySword.ElementAt(q).CriticalHitChance
-               , legendarySword.ElementAt(q).Value);
-                legendarySword.ElementAt(q).Swordpic.Save(alfa + @"CreatedSword\" + legendarySword.ElementAt(q).Name + ".bmp");
-                BaseWeapon.AddToBag(legendarySword.ElementAt(q), myBag);
+                Console.WriteLine(sword.ToString());
+                var fileName = string.Format("{0}.bmp", sword.Name);
+                var filePath = Path.Combine(alfa, "CreatedSword", fileName);
+                sword.Picture.Save(filePath + ".bmp");
+                BaseWeapon.AddToBag(sword, myBag);
             }
         }
     }
-    // .FindChest + .KillEnemy  methods
 }
