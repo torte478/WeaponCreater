@@ -2,8 +2,14 @@
 
 namespace WeaponCeater
 {
+    /// <summary>
+    /// Manager of game file paths
+    /// </summary>
     public class PathManager
     {
+        /// <summary>
+        /// Static consturctor
+        /// </summary>
         public PathManager()
         {
             var basePath = new DirectoryInfo(Directory.GetCurrentDirectory())

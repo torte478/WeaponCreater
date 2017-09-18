@@ -6,26 +6,45 @@ using System.Linq;
 
 namespace WeaponCeater
 {
+    /// <summary>
+    /// Loader of sword data files
+    /// </summary>
     public class SwordLoader
     {
         private readonly PathManager pathManager;
 
+        /// <summary>
+        /// Initialize sword loader
+        /// </summary>
+        /// <param name="pathManager">Manager of paths to data files</param>
         public SwordLoader(PathManager pathManager)
         {
             this.pathManager = pathManager;
         }
 
+        /// <summary>
+        /// Load legendary swords data
+        /// </summary>
+        /// <returns>Collection of legendary swords</returns>
         public List<LegendarySword> LoadLegendarySwords()
         {
             var swords = LoadWeaponItems<LegendarySword>(pathManager.LegendarySwordsDirectory);
             return swords;
         }
 
+        /// <summary>
+        /// Load sword blades
+        /// </summary>
+        /// <returns>Collection of sword blades</returns>
         public List<SwordBlade> LoadSwordBlades()
         {
             return LoadWeaponItems<SwordBlade>(pathManager.SwordBladesDirectory);
         }
 
+        /// <summary>
+        /// Load sword handles
+        /// </summary>
+        /// <returns>Collection of sword handles</returns>
         public List<SwordHandle> LoadSwordHandles()
         {
             return LoadWeaponItems<SwordHandle>(pathManager.SwordHandlesDirectory);

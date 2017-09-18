@@ -1,20 +1,36 @@
 ﻿namespace WeaponCeater
 {
+    /// <summary>
+    /// Implements application logic
+    /// </summary>
     public class GameController
     {
         private readonly GameModel model;
         private readonly GameView view;
 
+        /// <summary>
+        /// Initialize MVC pattern
+        /// </summary>
+        /// <param name="model">Game model</param>
+        /// <param name="view">Game view</param>
         public GameController(GameModel model, GameView view)
         {
             this.model = model;
             this.view = view;
 
+            SubscribeToModelEvents(model);
+        }
+
+        private void SubscribeToModelEvents(GameModel model)
+        {
             model.AllActionsCompleted += Model_AllActionsCompleted;
-            model.WeaponFounded += Model_WeaponFounded;
+            model.WeaponFound += Model_WeaponFounded;
             model.NeedExchangeWeapon += Model_NeedExchangeWeapon;
         }
 
+        /// <summary>
+        /// Start controller
+        /// </summary>
         public void Run()
         {
             model.DoActions();
@@ -58,7 +74,7 @@
 
         private void CheckPicturesDeleting()
         {
-            var needRemovePictures = view.AskPictureDeleting();
+            var needRemovePictures = view.AskPictureRemoving();
             if (needRemovePictures)
             {
                 RemovePictures();

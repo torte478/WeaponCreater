@@ -1,5 +1,8 @@
 ﻿namespace WeaponCeater
 {
+    /// <summary>
+    /// Weapon data
+    /// </summary>
     public class WeaponStatistics
     {
         public const string UndefinedImageName = "undefined";
@@ -13,6 +16,11 @@
         public string Creator { get; set; }
         public int Level { get; set; }
 
+        /// <summary>
+        /// Combine weapon statistics to another
+        /// </summary>
+        /// <param name="other">Weapon statistics for combine</param>
+        /// <returns>Combined weapon statistics</returns>
         public WeaponStatistics Combine(WeaponStatistics other)
         {
             return new WeaponStatistics
@@ -43,6 +51,10 @@
             return string.Format("{0} {1}", first, second);
         }
 
+        /// <summary>
+        /// Returns information about weapon data
+        /// </summary>
+        /// <returns>Information about weapon data</returns>
         public override string ToString()
         {
             return string.Format(

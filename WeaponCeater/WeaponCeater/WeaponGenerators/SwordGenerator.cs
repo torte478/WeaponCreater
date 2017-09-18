@@ -3,12 +3,20 @@ using System.Drawing;
 
 namespace WeaponCeater
 {
+    /// <summary>
+    /// Generator of weapons
+    /// </summary>
     public class SwordGenerator : BaseWeaponGenerator, IWeaponGenerator
     {
         private readonly List<LegendarySword> legendarySwords;
         private readonly List<SwordBlade> swordBlades;
         private readonly List<SwordHandle> swordHandles;
 
+        /// <summary>
+        /// Initialize sword generator
+        /// </summary>
+        /// <param name="loader">Loader of sword data</param>
+        /// <param name="pathManager">Storage of game files paths</param>
         public SwordGenerator(SwordLoader loader, PathManager pathManager)
             : base(pathManager)
         {
@@ -17,6 +25,11 @@ namespace WeaponCeater
             swordHandles = loader.LoadSwordHandles();
         }
 
+        /// <summary>
+        /// Generate sword
+        /// </summary>
+        /// <param name="legendaryWeaponChance">Chance to create legendary weapon</param>
+        /// <returns>Generated sword</returns>
         public IWeapon Generate(int legendaryWeaponChance)
         {
             ISword sword;
@@ -55,8 +68,8 @@ namespace WeaponCeater
                 Stats = swordStats,
                 Picture = picture,
             };
-            ApplyBonus(sword, blade, BladeBonuses);
-            ApplyBonus(sword, handle, HandleBonuses);
+            ApplyBonus(sword, blade.Stats.Creator, BladeBonuses);
+            ApplyBonus(sword, handle.Stats.Creator, HandleBonuses);
 
             return sword;
         }
