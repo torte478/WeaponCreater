@@ -3,7 +3,7 @@ using System.IO;
 
 namespace WeaponCeater
 {
-    public class Game
+    public class GameModel
     {
         private const int ChestLegendaryWeaponChance = 5;
         private const int EnemyLegendaryWeaponChance = 10;
@@ -17,7 +17,7 @@ namespace WeaponCeater
         public event Action<IWeapon> WeaponFounded;
         public event Action<IWeapon> NeedExchangeWeapon;
 
-        public Game(IWeaponGenerator weaponGenerator, string createdSwordsDirectory)
+        public GameModel(IWeaponGenerator weaponGenerator, string createdSwordsDirectory)
         {
             this.weaponGenerator = weaponGenerator;
             this.createdSwordsDirectory = createdSwordsDirectory;

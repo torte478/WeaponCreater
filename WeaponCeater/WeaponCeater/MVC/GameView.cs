@@ -2,7 +2,7 @@
 
 namespace WeaponCeater
 {
-    public class UserInterface
+    public class GameView
     {
         public void ShowInventory(Inventory inventory)
         {

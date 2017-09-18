@@ -1,11 +1,11 @@
 ﻿namespace WeaponCeater
 {
-    public class Controller
+    public class GameController
     {
-        private readonly Game model;
-        private readonly UserInterface view;
+        private readonly GameModel model;
+        private readonly GameView view;
 
-        public Controller(Game model, UserInterface view)
+        public GameController(GameModel model, GameView view)
         {
             this.model = model;
             this.view = view;

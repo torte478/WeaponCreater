@@ -55,7 +55,7 @@ namespace WeaponCeater
                 Stats = swordStats,
                 Picture = picture,
             };
-            ApplyBonus(sword, blade, BladeBonuses); //TODO
+            ApplyBonus(sword, blade, BladeBonuses);
             ApplyBonus(sword, handle, HandleBonuses);
 
             return sword;
