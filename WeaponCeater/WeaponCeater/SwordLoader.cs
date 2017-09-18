@@ -17,29 +17,30 @@ namespace WeaponCeater
 
         public List<LegendarySword> LoadLegendarySwords()
         {
-            throw new NotImplementedException();
+            return LoadWeaponItems<LegendarySword>(pathManager.LegendarySwordsDirectory);
         }
 
         public List<SwordBlade> LoadSwordBlades()
         {
-            throw new System.NotImplementedException();
+            return LoadWeaponItems<SwordBlade>(pathManager.SwordBladesDirectory);
         }
 
         public List<SwordHandle> LoadSwordHandles()
         {
-            throw new System.NotImplementedException();
+            return LoadWeaponItems<SwordHandle>(pathManager.SwordHandlesDirectory);
         }
 
-        private List<Tuple<WeaponStatistics, Bitmap>> Load(string dataPath)
+        private List<T> LoadWeaponItems<T>(string path)
+            where T : IWeaponItem, new()
         {
-            return LoadStatistics(dataPath)
-                        .Select(stat => Tuple.Create(stat, LoadPicture(stat.ImageName)))
-                        .ToList();
+            return LoadStatistics(path)
+                    .Select(stat => new T { Stats = stat, Picture = LoadPicture(stat.ImageName) })
+                    .ToList();
         }
 
         private List<WeaponStatistics> LoadStatistics(string dataPath)
         {
-            return System.IO.File.ReadAllLines(dataPath)
+            return File.ReadAllLines(dataPath)
                         .Select(line => line.Split(' '))
                         .Select(ConvertToStatistics)
                         .Where(stat => stat != null)
