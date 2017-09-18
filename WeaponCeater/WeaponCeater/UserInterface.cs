@@ -12,6 +12,7 @@ namespace WeaponCeater
             {
                 Console.WriteLine(weapon.Stats.Name);
             }
+            Console.WriteLine();
         }
 
         public bool AskSwordReplace()
@@ -34,6 +35,11 @@ namespace WeaponCeater
             } while (answer != "y" && answer != "n");
 
             return answer == "y";
+        }
+
+        public void WaitInput()
+        {
+            Console.ReadLine();
         }
 
         public int AskInventoryBagIndex(int minValue, int maxValue)

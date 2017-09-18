@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseWeaponGenerator.cs" />
+    <Compile Include="Controller.cs" />
     <Compile Include="CreatorBonus.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Interfaces.cs" />

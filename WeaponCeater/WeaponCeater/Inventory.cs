@@ -6,7 +6,7 @@ namespace WeaponCeater
 {
     public class Inventory : IEnumerable<IWeapon>
     {
-        private const int MaxWeaponCount = 6;
+        public const int MaxWeaponCount = 6;
 
         private readonly List<IWeapon> weapons;
 

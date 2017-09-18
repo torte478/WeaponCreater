@@ -1,5 +1,5 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System;
+using System.IO;
 
 namespace WeaponCeater
 {
@@ -9,28 +9,66 @@ namespace WeaponCeater
         private const int EnemyLegendaryWeaponChance = 10;
 
         private readonly IWeaponGenerator weaponGenerator;
-        private readonly UserInterface gui;
         private readonly string createdSwordsDirectory;
 
-        private readonly Inventory inventory;
+        public Inventory Inventory { get; private set; }
 
-        public Game(IWeaponGenerator weaponGenerator, UserInterface gui, string createdSwordsDirectory)
+        public event Action AllActionsCompleted;
+        public event Action<IWeapon> WeaponFounded;
+        public event Action<IWeapon> NeedExchangeWeapon;
+
+        public Game(IWeaponGenerator weaponGenerator, string createdSwordsDirectory)
         {
             this.weaponGenerator = weaponGenerator;
-            this.gui = gui;
             this.createdSwordsDirectory = createdSwordsDirectory;
 
-            inventory = new Inventory();
+            Inventory = new Inventory();
         }
 
-        public void Play()
+        public int GetTotalWeaponCost()
         {
-            DoActions();
-            ShowTotalWeaponCost();
-            CheckPicturesDeleting();
+            return Inventory.GetTotalCost();
         }
 
-        private void DoActions()
+        public void ExchangeWeapon(IWeapon weapon, int index)
+        {
+            Inventory.RemoveAt(index);
+            Inventory.Add(weapon);
+        }
+
+        public void TryAddWeaponToInventory(IWeapon weapon)
+        {
+            if (Inventory.IsFull())
+            {
+                NeedExchangeWeapon.Raise(weapon);
+            }
+            else
+            {
+                Inventory.Add(weapon);
+            }
+        }
+
+        public string GetCreatedWeaponDirectory()
+        {
+            return createdSwordsDirectory;
+        }
+
+        public void RemoveCreatedPictures()
+        {
+            var files = new DirectoryInfo(createdSwordsDirectory).GetFiles();
+            foreach (var file in files)
+            {
+                file.Delete();
+            }
+        }
+
+        public void DoActions()
+        {
+            FindWeapons();
+            AllActionsCompleted.Raise();
+        }
+
+        private void FindWeapons()
         {
             FindChest();
             KillEnemy();
@@ -47,77 +85,36 @@ namespace WeaponCeater
             FindWeapon(ChestLegendaryWeaponChance);
         }
 
-        private void FindWeapon(int legendaryWeaponChance)
-        {
-            var weapon = weaponGenerator.Generate(legendaryWeaponChance);
-            gui.ShowWeapon(weapon);
-            TryPutWeaponToInventory(weapon);
-        }
-
-        private void TryPutWeaponToInventory(IWeapon weapon)
-        {
-            if (inventory.IsFull())
-            {
-                var wasExcanged = TryExchangeWeapon(weapon);
-                if (wasExcanged)
-                    gui.ShowInventory(inventory);
-            }
-            else
-            {
-                inventory.Add(weapon);
-            }
-        }
-
-        private bool TryExchangeWeapon(IWeapon weapon)
-        {
-            var needExchange = gui.AskSwordReplace();
-            if (needExchange)
-            {
-                ExcangedWeapon(weapon);
-            }
-            return needExchange;
-        }
-
-        private void ExcangedWeapon(IWeapon weapon)
-        {
-            var removedWeaponIndex = gui.AskInventoryBagIndex(1, inventory.Count());
-            inventory.RemoveAt(removedWeaponIndex);
-            inventory.Add(weapon);
-        }
-
         private void KillEnemy()
         {
             FindWeapon(EnemyLegendaryWeaponChance);
         }
 
-        private void ShowTotalWeaponCost()
+        private void FindWeapon(int legendaryWeaponChance)
         {
-            var totalCost = inventory.GetTotalCost();
-            gui.ShowTotalCost(totalCost);
+            var weapon = weaponGenerator.Generate(legendaryWeaponChance);
+            WeaponFounded.Raise(weapon);
+        }
+    }
+
+    public static class EventExtensions
+    {
+        public static void Raise(this Action eventHandler)
+        {
+            var handler = eventHandler;
+            if (handler != null)
+            {
+                handler();
+            }
         }
 
-        private void CheckPicturesDeleting()
+        public static void Raise<T>(this Action<T> eventHandler, T arg)
         {
-            var needDeletePictures = gui.AskPictureDeleting();
-            if (needDeletePictures)
+            var handler = eventHandler;
+            if (handler != null)
             {
-                ClearCreatedSwordsDirectory();
+                handler(arg);
             }
-            else
-            {
-                gui.ShowCheckDirectoryMessage(createdSwordsDirectory);
-            }
-        }
-
-        private void ClearCreatedSwordsDirectory()
-        {
-            var files = new DirectoryInfo(createdSwordsDirectory).GetFiles();
-            foreach (var file in files)
-            {
-                file.Delete();
-            }
-
-            gui.ShowPicturesDeletedMessage();
         }
     }
 }
