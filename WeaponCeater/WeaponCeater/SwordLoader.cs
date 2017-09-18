@@ -17,7 +17,8 @@ namespace WeaponCeater
 
         public List<LegendarySword> LoadLegendarySwords()
         {
-            return LoadWeaponItems<LegendarySword>(pathManager.LegendarySwordsDirectory);
+            var swords = LoadWeaponItems<LegendarySword>(pathManager.LegendarySwordsDirectory);
+            return swords;
         }
 
         public List<SwordBlade> LoadSwordBlades()
@@ -33,7 +34,9 @@ namespace WeaponCeater
         private List<T> LoadWeaponItems<T>(string path)
             where T : IWeaponItem, new()
         {
-            return LoadStatistics(path)
+            var stats = LoadStatistics(path);
+
+            return stats
                     .Select(stat => new T { Stats = stat, Picture = LoadPicture(stat.ImageName) })
                     .ToList();
         }
@@ -51,7 +54,7 @@ namespace WeaponCeater
         {
             try
             {
-                return new WeaponStatistics
+                var stat = new WeaponStatistics
                 {
                     Name = tokens[0],
                     Fightspeed = Convert.ToInt32(tokens[1]),
@@ -62,6 +65,7 @@ namespace WeaponCeater
                     Level = Convert.ToInt32(tokens[6]),
                     ImageName = tokens[7],
                 };
+                return stat;
             }
             catch (Exception)
             {
